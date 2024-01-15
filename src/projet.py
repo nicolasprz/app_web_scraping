@@ -34,11 +34,11 @@ def create_soup_object(url: str, out_path: str) -> BeautifulSoup:
         return soup
 
 
-def get_price(tag: Tag) -> float:
+def get_price(tag: Tag) -> float | list[float]:
     """
     From element tag, gets the price of sold object.
     :param tag: Tag object where price is found
-    :return: price as float
+    :return: price as float or list of floats
     """
     list_price = tag.find('span', class_='s-item__price').text.split()
     if len(list_price) > 2:
