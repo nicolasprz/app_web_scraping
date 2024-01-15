@@ -1,14 +1,21 @@
 import os
+import re
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 
-def soup_object_to_txt_file(soup: BeautifulSoup, out_path: str):
+def soup_object_to_txt_file(soup: BeautifulSoup, out_path: str,
+                            write_type: str = 'w') -> None:
     """
     Writes a soup indented object to txt file
+    :param soup: soup object to write
+    :param out_path: path of output text file
+    :param write_type: single character ('w', 'a') telling whether to erase
+        content and write object, or append at the end of the file.
     """
-    with open(out_path, 'w') as f:
+
+    with open(out_path, write_type) as f:
         f.write(soup.prettify())
 
 
@@ -27,27 +34,46 @@ def create_soup_object(url: str, out_path: str) -> BeautifulSoup:
         return soup
 
 
+def get_price(tag: Tag) -> float:
+    """
+    From element tag, gets the price of sold object.
+    :param tag: Tag object where price is found
+    :return: price as float
+    """
+    list_price = tag.find('span', class_='s-item__price').text.split()
+    if len(list_price) > 2:
+        return [float(element.replace(',', '.'))
+                for element in list_price
+                if re.search(r'\d', element)]  # Checks if contains a number
+    return float(list_price[0].replace(',', '.'))
+
+
 def scrape_data(soup: BeautifulSoup, tags_out_path: str):
     """
     Scrape data given tags object.
-    :param tags: BeautifulSoup object to scrape
+    :param soup: BeautifulSoup object to scrape
+    :param tags_out_path: path of output text code
     """
     # Get all items from search
     target_li_tags = soup.find_all(
         'li', class_='s-item s-item__pl-on-bottom')[1:]
+    with open(tags_out_path, 'w'):
+        pass
+    titles = []
+    prices = []
     for li_tag in target_li_tags:
-        soup_object_to_txt_file(li_tag, tags_out_path)
-    # Get all items titles
-    titles = [li_tag.find('span', role='heading').text
-              for li_tag in target_li_tags]
-    print(titles)
+        soup_object_to_txt_file(li_tag, tags_out_path, write_type='a')
+        titles.append(li_tag.find('span', role='heading').text)
+        price = get_price(li_tag)
+        prices.append(price)
+        print(price)
 
 
 if __name__ == "__main__":
     URL: str = ('https://www.ebay.fr/sch/i.html?_from='
                 'R40&_trksid=p4432023.m570.l1313&_nkw='
                 'macbook+air&_sacat=0')
-    output_dir: str = f"{os.path.dirname(__file__)}/output/"
+    output_dir: str = f"{os.path.dirname(__file__)}/../output/"
     os.makedirs(output_dir, exist_ok=True)
     soup = create_soup_object(URL, f"{output_dir}html.txt")
     scrape_data(soup, f"{output_dir}li_tags.txt")
