@@ -1,6 +1,7 @@
 import os
 import re
 
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup, Tag
 
@@ -19,7 +20,7 @@ def soup_object_to_txt_file(soup: BeautifulSoup, out_path: str,
         f.write(soup.prettify())
 
 
-def create_soup_object(url: str, out_path: str) -> BeautifulSoup:
+def url_to_soup_object(url: str, out_path: str) -> BeautifulSoup:
     """
     From given url, creates a soup object with HTML source code.
     :param url: url from site to scrap as a string
@@ -30,7 +31,8 @@ def create_soup_object(url: str, out_path: str) -> BeautifulSoup:
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
         print(f"Title of page: {soup.title.text}")
-        soup_object_to_txt_file(soup, out_path)
+        if out_path is not None:
+            soup_object_to_txt_file(soup, out_path)
         return soup
 
 
@@ -48,7 +50,7 @@ def get_price(tag: Tag) -> float | list[float]:
     return float(list_price[0].replace(',', '.'))
 
 
-def scrape_data(soup: BeautifulSoup, tags_out_path: str):
+def scrape_main_page(soup: BeautifulSoup, tags_out_path: str) -> pd.DataFrame:
     """
     Scrape data given tags object.
     :param soup: BeautifulSoup object to scrape
@@ -66,14 +68,31 @@ def scrape_data(soup: BeautifulSoup, tags_out_path: str):
         titles.append(li_tag.find('span', role='heading').text)
         price = get_price(li_tag)
         prices.append(price)
-        print(price)
+    return pd.DataFrame(dict(titles=titles, prices=prices))
 
 
-if __name__ == "__main__":
-    URL: str = ('https://www.ebay.fr/sch/i.html?_from='
-                'R40&_trksid=p4432023.m570.l1313&_nkw='
-                'macbook+air&_sacat=0')
-    output_dir: str = f"{os.path.dirname(__file__)}/../output/"
-    os.makedirs(output_dir, exist_ok=True)
-    soup = create_soup_object(URL, f"{output_dir}html.txt")
-    scrape_data(soup, f"{output_dir}li_tags.txt")
+def get_complete_url(base_url: str, user_input: str) -> str:
+    """
+    Given the base URL of the website, returns the complete url with
+    user input.
+    :param base_url: base url of website
+    :param user_input: user input given from website's form.
+    :return: complete url
+    """
+    return f"{base_url}{user_input.replace(' ', '+')}&_sacat=0"
+
+
+def main(user_input: str) -> None:
+    """
+    Main function. This function is run by this script. Saves scraped data
+    to a csv file.
+    """
+    BASE_URL: str = ('https://www.ebay.fr/sch/i.html?_from='
+                     'R40&_trksid=p4432023.m570.l1313&_nkw=')
+    OUTPUT_DIR: str = f"{os.path.dirname(__file__)}/../../output/"
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    URL = get_complete_url(BASE_URL, user_input)
+    print(URL)
+    soup = url_to_soup_object(URL, f"{OUTPUT_DIR}html.txt")
+    data = scrape_main_page(soup, f"{OUTPUT_DIR}li_tags.txt")
+    data.to_csv(f"{OUTPUT_DIR}scraped_data.csv", index=False)

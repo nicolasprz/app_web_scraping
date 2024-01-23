@@ -10,6 +10,13 @@
         margin: 0;
     }
 
+    /* Style the container */
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
     /* Style the input form */
     form {
         background-color: #fff;
@@ -44,6 +51,17 @@
         cursor: pointer;
     }
 
+    /* Style the output bubble */
+    .output-bubble {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        border-radius: 8px;
+        max-width: 400px;
+        width: 100%;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
     /* Style the output table */
     table {
         width: 100%;
@@ -63,12 +81,16 @@
     }
 </style>
 
-<form method="post" action="{% url 'process_input' %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Submit">
-</form>
+<div class="container">
+    <form method="post" action="{% url 'process_input' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit">
+    </form>
 
-{% if output %}
-    <p>Output: {{ output }}</p>
-{% endif %}
+    {% if output %}
+        <div class="output-bubble">
+            <p>Output: {{ output }}</p>
+        </div>
+    {% endif %}
+</div>

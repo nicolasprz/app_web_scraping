@@ -29,3 +29,5 @@ db.sqlite3
 .vscode/
 .history/
 *.code-workspace
+
+test.ipynb
