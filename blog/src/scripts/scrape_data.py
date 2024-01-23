@@ -95,4 +95,4 @@ def main(user_input: str) -> None:
     print(URL)
     soup = url_to_soup_object(URL, f"{OUTPUT_DIR}html.txt")
     data = scrape_main_page(soup, f"{OUTPUT_DIR}li_tags.txt")
-    data.to_csv(f"{OUTPUT_DIR}scraped_data.csv", index=False)
+    data.to_csv(f"{OUTPUT_DIR}scraped_data.csv", index=False, sep=';')
