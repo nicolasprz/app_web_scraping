@@ -1,9 +1,6 @@
 __pycache__/
 *.DS_Store
 
-output/*
-!output/README.md
-
 # Python
 *.pyc
 *~
@@ -31,3 +28,4 @@ db.sqlite3
 *.code-workspace
 
 test.ipynb
+output/
