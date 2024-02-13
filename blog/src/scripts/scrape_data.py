@@ -1,9 +1,17 @@
+"""
+Given the page associated to user input, scrapes data on main page.
+"""
+# !/usr/bin/env python3.8
 import os
 import re
 
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup, Tag
+
+BASE_URL: str = ('https://www.ebay.fr/sch/i.html?_from='
+                 'R40&_trksid=p4432023.m570.l1313&_nkw=')
+OUTPUT_DIR: str = f"{os.path.dirname(__file__)}/../../output/"
 
 
 def soup_object_to_txt_file(soup: BeautifulSoup, out_path: str,
@@ -87,12 +95,8 @@ def main(user_input: str) -> None:
     Main function. This function is run by this script. Saves scraped data
     to a csv file.
     """
-    BASE_URL: str = ('https://www.ebay.fr/sch/i.html?_from='
-                     'R40&_trksid=p4432023.m570.l1313&_nkw=')
-    OUTPUT_DIR: str = f"{os.path.dirname(__file__)}/../../output/"
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     URL = get_complete_url(BASE_URL, user_input)
-    print(URL)
     soup = url_to_soup_object(URL, f"{OUTPUT_DIR}html.txt")
     data = scrape_main_page(soup, f"{OUTPUT_DIR}li_tags.txt")
     data.to_csv(f"{OUTPUT_DIR}scraped_data.csv", index=False, sep=';')
