@@ -9,7 +9,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup, Tag
 
-BASE_URL: str = ('https://www.ebay.fr/sch/i.html?_from='
+BASE_URL: str = ('https://www.ebay.com/sch/i.html?_from='
                  'R40&_trksid=p4432023.m570.l1313&_nkw=')
 OUTPUT_DIR: str = f"{os.path.dirname(__file__)}/../../output/"
 
@@ -52,10 +52,10 @@ def get_price(tag: Tag) -> float | list[float]:
     """
     list_price = tag.find('span', class_='s-item__price').text.split()
     if len(list_price) > 2:
-        return [float(element.replace(',', '.'))
+        return [float(element.replace(',', '.').replace('$', ''))
                 for element in list_price
                 if re.search(r'\d', element)]  # Checks if contains a number
-    return float(list_price[0].replace(',', '.'))
+    return float(list_price[0].replace(',', '.').replace('$', ''))
 
 
 def scrape_main_page(soup: BeautifulSoup, tags_out_path: str) -> pd.DataFrame:
