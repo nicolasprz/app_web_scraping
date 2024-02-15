@@ -1,7 +1,6 @@
 """
 Given the page associated to user input, scrapes data on main page.
 """
-# !/usr/bin/env python3.8
 import os
 import re
 
@@ -9,7 +8,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup, Tag
 
-BASE_URL: str = ('https://www.ebay.com/sch/i.html?_from='
+BASE_URL: str = ('https://www.ebay.fr/sch/i.html?_from='
                  'R40&_trksid=p4432023.m570.l1313&_nkw=')
 OUTPUT_DIR: str = f"{os.path.dirname(__file__)}/../../output/"
 
