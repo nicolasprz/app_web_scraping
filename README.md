@@ -27,3 +27,5 @@ Contient tous les output en fichiers txt permettant de visualiser le code HTML d
 [Scrapy beginners guide](https://scrapeops.io/python-scrapy-playbook/scrapy-beginners-guide)
 
 [Scraper plusieurs pages avec scrapy](https://medium.com/@alexandrewrg/scraper-les-donn%C3%A9es-de-plusieurs-pages-avec-scrapy-2e076ac7dc09)
+
+[Liste des sites accessibles via requests sur PythonAnywhere](https://www.pythonanywhere.com/whitelist/)
