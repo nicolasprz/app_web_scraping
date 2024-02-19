@@ -1,14 +1,16 @@
 """
 Given the page associated to user input, scrapes data on main page.
+# TODO: Check for eBay developer account availability.
 """
 import os
 import re
+from typing import Optional
 
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup, Tag
 
-BASE_URL: str = ('https://www.ebay.fr/sch/i.html?_from='
+BASE_URL: str = ('https://www.ebay.com/sch/i.html?_from='
                  'R40&_trksid=p4432023.m570.l1313&_nkw=')
 OUTPUT_DIR: str = f"{os.path.dirname(__file__)}/../../output/"
 
@@ -27,7 +29,8 @@ def soup_object_to_txt_file(soup: BeautifulSoup, out_path: str,
         f.write(soup.prettify())
 
 
-def url_to_soup_object(url: str, out_path: str) -> BeautifulSoup:
+def url_to_soup_object(url: str,
+                       out_path: Optional[str] = None) -> BeautifulSoup:
     """
     From given url, creates a soup object with HTML source code.
     :param url: url from site to scrap as a string
@@ -57,7 +60,7 @@ def get_price(tag: Tag) -> float | list[float]:
     return float(list_price[0].replace(',', '.').replace('$', ''))
 
 
-def scrape_main_page(soup: BeautifulSoup, tags_out_path: str) -> pd.DataFrame:
+def scrape_pages(soup: BeautifulSoup, tags_out_path: str) -> pd.DataFrame:
     """
     Scrape data given tags object.
     :param soup: BeautifulSoup object to scrape
@@ -66,6 +69,7 @@ def scrape_main_page(soup: BeautifulSoup, tags_out_path: str) -> pd.DataFrame:
     # Get all items from search
     target_li_tags = soup.find_all(
         'li', class_='s-item s-item__pl-on-bottom')[1:]
+    print(target_li_tags)
     with open(tags_out_path, 'w'):
         pass
     titles = []
@@ -75,7 +79,31 @@ def scrape_main_page(soup: BeautifulSoup, tags_out_path: str) -> pd.DataFrame:
         titles.append(li_tag.find('span', role='heading').text)
         price = get_price(li_tag)
         prices.append(price)
+        single_item = li_tag.find('a', class_='s-item__link')
+        single_item_link = single_item.get('href')
+        item_soup = url_to_soup_object(url=single_item_link)
+        (
+            ratings, positive_feedback_percentage, nb_items_sold
+        ) = scrape_item_data(item_soup)
     return pd.DataFrame(dict(titles=titles, prices=prices))
+
+
+def scrape_item_data(soup: BeautifulSoup) -> tuple[float | int, ...]:
+    """
+    # TODO: Finish each item ratings scraping.
+    Scrapes single item ratings data (from other users of eBay).
+    :param soup: soup object containing a single item data
+    """
+    ratings = soup.find_all('div', class_='fdbk-detail-seller-rating')
+    seller_info = soup.find_all(
+        'div',
+        class_='d-stores-info-categories__container__info__section__item'
+    )
+    positive_feedback_percentage, nb_items_sold = [
+        info.find('span', class_='ux-textspans ux-textspans--BOLD')
+        for info in seller_info
+    ]
+    return ratings, positive_feedback_percentage, nb_items_sold
 
 
 def get_complete_url(base_url: str, user_input: str) -> str:
@@ -97,5 +125,9 @@ def main(user_input: str) -> None:
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     URL = get_complete_url(BASE_URL, user_input)
     soup = url_to_soup_object(URL, f"{OUTPUT_DIR}html.txt")
-    data = scrape_main_page(soup, f"{OUTPUT_DIR}li_tags.txt")
+    data = scrape_pages(soup, f"{OUTPUT_DIR}li_tags.txt")
     data.to_csv(f"{OUTPUT_DIR}scraped_data.csv", index=False, sep=';')
+
+
+if __name__ == "__main__":
+    main("clavier logitech")
