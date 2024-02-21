@@ -40,7 +40,7 @@ def url_to_soup_object(url: str,
     response = requests.get(url)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
-        print(f"Title of page: {soup.title.text}")
+        print(f"Title of page: {soup.title.text.strip(' | eBay')}")
         if out_path is not None:
             soup_object_to_txt_file(soup, out_path)
         return soup
@@ -69,7 +69,6 @@ def scrape_pages(soup: BeautifulSoup, tags_out_path: str) -> pd.DataFrame:
     # Get all items from search
     target_li_tags = soup.find_all(
         'li', class_='s-item s-item__pl-on-bottom')[1:]
-    print(target_li_tags)
     with open(tags_out_path, 'w'):
         pass
     titles = []
@@ -83,9 +82,14 @@ def scrape_pages(soup: BeautifulSoup, tags_out_path: str) -> pd.DataFrame:
         single_item_link = single_item.get('href')
         item_soup = url_to_soup_object(url=single_item_link)
         (
-            ratings, positive_feedback_percentage, nb_items_sold
+            rating_avg, positive_feedback_percentage, nb_items_sold
         ) = scrape_item_data(item_soup)
-    return pd.DataFrame(dict(titles=titles, prices=prices))
+    print()
+    return pd.DataFrame(dict(
+        titles=titles, prices=prices, ratings=rating_avg,
+        positive_feedback_percentage=positive_feedback_percentage,
+        nb_items_sold=nb_items_sold
+    ))
 
 
 def scrape_item_data(soup: BeautifulSoup) -> tuple[float | int, ...]:
@@ -94,7 +98,7 @@ def scrape_item_data(soup: BeautifulSoup) -> tuple[float | int, ...]:
     Scrapes single item ratings data (from other users of eBay).
     :param soup: soup object containing a single item data
     """
-    ratings = soup.find_all('div', class_='fdbk-detail-seller-rating')
+    rating_avg = get_rating_average(soup)
     seller_info = soup.find_all(
         'div',
         class_='d-stores-info-categories__container__info__section__item'
@@ -103,7 +107,28 @@ def scrape_item_data(soup: BeautifulSoup) -> tuple[float | int, ...]:
         info.find('span', class_='ux-textspans ux-textspans--BOLD')
         for info in seller_info
     ]
-    return ratings, positive_feedback_percentage, nb_items_sold
+    print(f"{rating_avg=}")
+    print(f"{positive_feedback_percentage=}")
+    print(f"{nb_items_sold=}\n")
+    return rating_avg, positive_feedback_percentage, nb_items_sold
+
+
+def get_rating_average(soup: BeautifulSoup) -> float:
+    """
+    Given soup object of given item, returns the average score of the seller.
+    :param soup: soup object of an item on eBay
+    :return: average rating score of the seller
+    """
+    ratings_html = soup.find_all('div', class_='fdbk-detail-seller-rating')
+    if not ratings_html:
+        return float('nan')
+    ratings = [
+        float(
+            rating.find('span', class_='fdbk-detail-seller-rating__value').text
+        )
+        for rating in ratings_html
+    ]
+    return sum(ratings) / len(ratings)
 
 
 def get_complete_url(base_url: str, user_input: str) -> str:
