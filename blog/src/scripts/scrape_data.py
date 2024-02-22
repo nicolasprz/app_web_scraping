@@ -42,7 +42,7 @@ def url_to_soup_object(url: str,
     :param out_path: path of out text file
     :return: global soup object with all html source code
     """
-    response = requests.post(url, params=PARAMS)
+    response = requests.get(url, params=PARAMS)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
         print(f"Title of page: {soup.title.text.strip(' | eBay')}")
