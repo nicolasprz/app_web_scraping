@@ -42,7 +42,7 @@ def url_to_soup_object(url: str,
     :param out_path: path of out text file
     :return: global soup object with all html source code
     """
-    response = requests.get(url, params=PARAMS)
+    response = requests.post(url, params=PARAMS)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
         print(f"Title of page: {soup.title.text.strip(' | eBay')}")
@@ -50,7 +50,8 @@ def url_to_soup_object(url: str,
             soup_object_to_txt_file(soup, out_path)
         return soup
     else:
-        raise ValueError(f"Couldn't connect to eBay: {response.status_code}")
+        raise ValueError(f"Couldn't connect to eBay: {response.status_code}\n"
+                         f"{response.text}")
 
 
 def get_complete_url(base_url: str, user_input: str) -> str:
