@@ -1,6 +1,5 @@
 """
 Given the page associated to user input, scrapes data on main page.
-# TODO: Check for eBay developer account availability.
 """
 import os
 import re
@@ -10,8 +9,14 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup, Tag
 
-BASE_URL: str = ('https://www.api.sandbox.ebay.com/sch/i.html?_from='
-                 'R40&_trksid=p4432023.m570.l1313&_nkw=')
+APP_ID = 'NicolasP-scraping-SBX-caec9de28-0d416a25'
+API_URL = 'https://svcs.ebay.com/services/search/FindingService/v1'
+PARAMS = {
+    'OPERATION-NAME': 'findItemsByKeywords',
+    'SERVICE-VERSION': '1.13.0',
+    'SECURITY-APPNAME': APP_ID,
+    'RESPONSE-DATA-FORMAT': 'JSON',
+}
 OUTPUT_DIR: str = f"{os.path.dirname(__file__)}/../../output/"
 
 
@@ -37,13 +42,15 @@ def url_to_soup_object(url: str,
     :param out_path: path of out text file
     :return: global soup object with all html source code
     """
-    response = requests.get(url)
+    response = requests.get(url, params=PARAMS)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
         print(f"Title of page: {soup.title.text.strip(' | eBay')}")
         if out_path is not None:
             soup_object_to_txt_file(soup, out_path)
         return soup
+    else:
+        raise ValueError(f"Couldn't connect to eBay: {response.status_code}")
 
 
 def get_complete_url(base_url: str, user_input: str) -> str:
@@ -193,8 +200,8 @@ def main(user_input: str) -> None:
     to a csv file.
     """
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    URL = get_complete_url(BASE_URL, user_input)
-    soup = url_to_soup_object(URL, f"{OUTPUT_DIR}html.txt")
+    PARAMS.update({'keywords': user_input})
+    soup = url_to_soup_object(API_URL, f"{OUTPUT_DIR}html.txt")
     data = scrape_pages(soup, f"{OUTPUT_DIR}li_tags.txt")
     data.to_csv(f"{OUTPUT_DIR}scraped_data.csv", index=False, sep=';')
 
