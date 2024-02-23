@@ -18,5 +18,5 @@ def process_input(request):
         form = UserInputForm()
         output = None
 
-    return render(request, 'blog/template.html',
+    return render(request, 'blog/index.html',
                   {'form': form, 'output': output})

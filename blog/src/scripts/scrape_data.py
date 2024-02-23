@@ -1,6 +1,5 @@
 """
 Given the page associated to user input, scrapes data on main page.
-# TODO: Check for eBay developer account availability.
 """
 import os
 import re
@@ -106,6 +105,7 @@ def get_percentage_as_float(value: str) -> float:
 
 def get_nb_items_sold(value: str) -> int:
     """
+    # TODO: Add a script to handle millions (maybe an Enum ?).
     Given a number of format '[0-9]K?', returns its value as a integer.
     :param value: value as a string
     :return: same value converted to an integer
@@ -200,4 +200,5 @@ def main(user_input: str) -> None:
 
 
 if __name__ == "__main__":
+    # To test script locally
     main("clavier logitech")
