@@ -9,14 +9,9 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup, Tag
 
-APP_ID = 'NicolasP-scraping-SBX-caec9de28-0d416a25'
-API_URL = 'https://svcs.ebay.com/services/search/FindingService/v1'
-PARAMS = {
-    'OPERATION-NAME': 'findItemsByKeywords',
-    'SERVICE-VERSION': '1.13.0',
-    'SECURITY-APPNAME': APP_ID,
-    'RESPONSE-DATA-FORMAT': 'JSON',
-}
+
+BASE_URL: str = ('https://www.ebay.com/sch/i.html?_from='
+                 'R40&_trksid=p4432023.m570.l1313&_nkw=')
 OUTPUT_DIR: str = f"{os.path.dirname(__file__)}/../../output/"
 
 
