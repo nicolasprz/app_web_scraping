@@ -66,7 +66,7 @@
 									<h2>But du projet</h2>
 									<p>Ce site est le résultat d'un projet en rapport
 										avec le scraping de pages web. Plus précisément, à l'aide d'une recherche rentrée par l'utilisateur,
-										vous obtiendrez un classement du produit le plus intéressant à acheter (en fonction notamment des 
+										vous obtiendrez un classement des produit les plus intéressants à acheter (en fonction notamment des 
 										informations sur le vendeur, les retours des utilisateurs de eBay, etc.).</p>
 									<ul class="actions">
 										<li><a href="#two" class="button scrolly">Scraping</a></li>
@@ -79,102 +79,74 @@
 				<!-- Two -->
 					<section id="two" class="wrapper style3 fade-up">
 						<div class="inner">
-							<h2>What we do</h2>
-							<p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus, lacus eget hendrerit bibendum, urna est aliquam sem, sit amet imperdiet est velit quis lorem.</p>
-							<div class="features">
-								<section>
-									<span class="icon solid major fa-code"></span>
-									<h3>Lorem ipsum amet</h3>
-									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
-								</section>
-								<section>
-									<span class="icon solid major fa-lock"></span>
-									<h3>Aliquam sed nullam</h3>
-									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
-								</section>
-								<section>
-									<span class="icon solid major fa-cog"></span>
-									<h3>Sed erat ullam corper</h3>
-									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
-								</section>
-								<section>
-									<span class="icon solid major fa-desktop"></span>
-									<h3>Veroeros quis lorem</h3>
-									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
-								</section>
-								<section>
-									<span class="icon solid major fa-link"></span>
-									<h3>Urna quis bibendum</h3>
-									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
-								</section>
-								<section>
-									<span class="icon major fa-gem"></span>
-									<h3>Aliquam urna dapibus</h3>
-									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
-								</section>
-							</div>
-							<ul class="actions">
-								<li><a href="generic.html" class="button">Learn more</a></li>
-							</ul>
+							<h2>Web Scraping</h2>
+							<p>Entrez votre recherche dans le formulaire ci-dessous, puis appuyez sur entrée.</p>
+							<section>
+								<form method="post" action="{% url 'process_input' %}" id="inputForm">
+									<div class="fields">
+										<div class="field">
+											{% csrf_token %}
+            								{{ form.text_input }}
+										</div>
+									</div>
+								</form>
+								<!-- Table Container -->
+								<div class="table-container">
+									<table id="resultTable">
+										<thead>
+											<tr>
+												<th>Classement</th>
+												<th>Nom de l'article</th>
+												<th>Prix (en dollars)</th>
+												<th>Note moyenne vendeur</th>
+												<th>% retours positifs</th>
+												<th>Nombre articles vendus</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% if output %}
+												{% for row in output %}
+													<tr>
+														<td>{{ row.index }}</td>
+														<td>{{ row.title }}</td>
+														<td>{{ row.price_dollars }}</td>
+														<td>{{ row.rating_avg }}</td>
+														<td>{{ row.positive_feedback_percentage }}</td>
+														<td>{{ row.nb_items_sold }}</td>
+													</tr>
+												{% endfor %}
+											{% endif %}
+										</tbody>
+									</table>
+								</div>
+							</section>
 						</div>
 					</section>
 
 				<!-- Three -->
 					<section id="three" class="wrapper style1 fade-up">
 						<div class="inner">
-							<h2>Get in touch</h2>
-							<p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus, lacus eget hendrerit bibendum, urna est aliquam sem, sit amet imperdiet est velit quis lorem.</p>
-							<div class="split style1">
-								<section>
-									<form method="post" action="#">
-										<div class="fields">
-											<div class="field half">
-												<label for="name">Name</label>
-												<input type="text" name="name" id="name" />
-											</div>
-											<div class="field half">
-												<label for="email">Email</label>
-												<input type="text" name="email" id="email" />
-											</div>
-											<div class="field">
-												<label for="message">Message</label>
-												<textarea name="message" id="message" rows="5"></textarea>
-											</div>
-										</div>
-										<ul class="actions">
-											<li><a href="" class="button submit">Send Message</a></li>
+							<h2>Contact</h2>
+							<p>Si vous souhaitez me contacter, vous pouvez trouver mes réseaux ci-dessous.</p>
+							<section>
+								<ul class="contact">
+									<li>
+										<h3>E-mail</h3>
+										<a id="copyEmail">nicolas.perez@etu.univ-lyon1.fr</a>
+									</li>
+									<li>
+										<h3>Téléphone</h3>
+										<a id="copyPhoneNumber">0781281235</a>
+									</li>
+									<li>
+										<h3>Réseaux sociaux</h3>
+										<ul class="icons">
+											<li><a href="https://github.com/nicolasprz" target="_blank" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+											<li><a href="https://www.linkedin.com/in/nicolas-perez-342853252/" target="_blank" class="icon brands fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
 										</ul>
-									</form>
-								</section>
-								<section>
-									<ul class="contact">
-										<li>
-											<h3>Address</h3>
-											<span>12345 Somewhere Road #654<br />
-											Nashville, TN 00000-0000<br />
-											USA</span>
-										</li>
-										<li>
-											<h3>Email</h3>
-											<a href="#">user@untitled.tld</a>
-										</li>
-										<li>
-											<h3>Phone</h3>
-											<span>(000) 000-0000</span>
-										</li>
-										<li>
-											<h3>Social</h3>
-											<ul class="icons">
-												<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
-												<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
-												<li><a href="#" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
-												<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
-												<li><a href="#" class="icon brands fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
-											</ul>
-										</li>
-									</ul>
-								</section>
-							</div>
+									</li>
+								</ul>
+							</section>
 						</div>
 					</section>
 
@@ -199,4 +171,47 @@
 			<script src="{% static 'js/main.js' %}"></script>
 
 	</body>
+	<script>
+		// To submit the form by pressing enter
+		document.querySelector('textarea').addEventListener('keydown', function(event) {
+			if (event.key === 'Enter' && !event.shiftKey) {
+				event.preventDefault();
+				document.querySelector('form').submit();
+			}
+		});
+		
+
+		// To copy contact information to clipboard
+		function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            textarea.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+
+        document.getElementById('copyEmail').addEventListener('click', function() {
+            const email = this.innerText;
+            copyToClipboard(email);
+            alert('Email copied to clipboard: ' + email);
+        });
+
+        document.getElementById('copyPhoneNumber').addEventListener('click', function() {
+            const phoneNumber = this.innerText;
+            copyToClipboard(phoneNumber);
+            alert('Phone number copied to clipboard: ' + phoneNumber);
+        });
+
+		// To keep scroll Y value when reloading the page
+		document.addEventListener("DOMContentLoaded", function(event) { 
+            var scrollpos = localStorage.getItem('scrollpos');
+            if (scrollpos) window.scrollTo(0, scrollpos);
+        });
+
+        window.onbeforeunload = function(e) {
+            localStorage.setItem('scrollpos', window.scrollY);
+        };
+	</script>
 </html>

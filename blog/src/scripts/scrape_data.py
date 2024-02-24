@@ -187,7 +187,7 @@ def scrape_pages(soup: BeautifulSoup, tags_out_path: str) -> pd.DataFrame:
     ))
 
 
-def main(user_input: str) -> None:
+def main(user_input: str) -> pd.DataFrame:
     """
     Main function. This function is run by this script. Saves scraped data
     to a csv file.
@@ -197,6 +197,7 @@ def main(user_input: str) -> None:
     soup = url_to_soup_object(URL, f"{OUTPUT_DIR}html.txt")
     data = scrape_pages(soup, f"{OUTPUT_DIR}li_tags.txt")
     data.to_csv(f"{OUTPUT_DIR}scraped_data.csv", index=False, sep=';')
+    return data
 
 
 if __name__ == "__main__":
