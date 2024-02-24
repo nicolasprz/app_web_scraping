@@ -114,6 +114,7 @@ def get_percentage_as_float(value: str) -> float:
 
 def get_nb_items_sold(value: str) -> int:
     """
+    # TODO: Add a script to handle millions (maybe an Enum ?).
     Given a number of format '[0-9]K?', returns its value as a integer.
     :param value: value as a string
     :return: same value converted to an integer
@@ -195,7 +196,7 @@ def scrape_pages(soup: BeautifulSoup, tags_out_path: str) -> pd.DataFrame:
     ))
 
 
-def main(user_input: str) -> None:
+def main(user_input: str) -> pd.DataFrame:
     """
     Main function. This function is run by this script. Saves scraped data
     to a csv file.
@@ -205,7 +206,9 @@ def main(user_input: str) -> None:
     soup = url_to_soup_object(API_URL, f"{OUTPUT_DIR}html.txt")
     data = scrape_pages(soup, f"{OUTPUT_DIR}li_tags.txt")
     data.to_csv(f"{OUTPUT_DIR}scraped_data.csv", index=False, sep=';')
+    return data
 
 
 if __name__ == "__main__":
+    # To test script locally
     main("clavier logitech")

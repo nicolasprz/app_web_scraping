@@ -1,0 +1,217 @@
+{% load static %}
+<!DOCTYPE HTML>
+<!--
+	Hyperspace by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>eBay Scraping</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="{% static 'css/main.css' %}" />
+		<noscript><link rel="stylesheet" href="{% static 'css/noscript.css' %}" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Sidebar -->
+			<section id="sidebar">
+				<div class="inner">
+					<nav>
+						<ul>
+							<li><a href="#intro">Accueil</a></li>
+							<li><a href="#one">Informations</a></li>
+							<li><a href="#two">Scraping</a></li>
+							<li><a href="#three">Contact</a></li>
+						</ul>
+					</nav>
+				</div>
+			</section>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Intro -->
+					<section id="intro" class="wrapper style1 fullscreen fade-up">
+						<div class="inner">
+							<h1>Web Scraping</h1>
+							<p>Bienvenue sur ce site de web scraping ! Gagnez du temps lors de vos recherches sur eBay. <br />
+							Pour cela rendez-vous dans la partie "scraping" ci-dessous.</p>
+							<ul class="actions">
+								<li><a href="#one" class="button scrolly">Plus d'informations</a></li>
+							</ul>
+						</div>
+					</section>
+
+				<!-- One -->
+					<section id="one" class="wrapper style2 spotlights">
+						<section>
+							<a href="#" class="image"><img src="{% static 'images/pic01.png' %}" alt="" data-position="center center" /></a>
+							<div class="content">
+								<div class="inner">
+									<h2>Informations personnelles</h2>
+									<p>Je suis un étudiant en Data Science à Lyon, plus précisément en 2ème année de master SMSD
+									(Statistique, Modélisation et Sciences des données).</p>
+									<ul class="actions">
+										<li><a href="#three" class="button scrolly">Plus d'informations</a></li>
+									</ul>
+								</div>
+							</div>
+						</section>
+						<section>
+							<a href="#" class="image"><img src="{% static 'images/pic02.png' %}" alt="" data-position="top center" /></a>
+							<div class="content">
+								<div class="inner">
+									<h2>But du projet</h2>
+									<p>Ce site est le résultat d'un projet en rapport
+										avec le scraping de pages web. Plus précisément, à l'aide d'une recherche rentrée par l'utilisateur,
+										vous obtiendrez un classement des produit les plus intéressants à acheter (en fonction notamment des 
+										informations sur le vendeur, les retours des utilisateurs de eBay, etc.).</p>
+									<ul class="actions">
+										<li><a href="#two" class="button scrolly">Scraping</a></li>
+									</ul>
+								</div>
+							</div>
+						</section>
+					</section>
+
+				<!-- Two -->
+					<section id="two" class="wrapper style3 fade-up">
+						<div class="inner">
+							<h2>Web Scraping</h2>
+							<p>Entrez votre recherche dans le formulaire ci-dessous, puis appuyez sur entrée.</p>
+							<section>
+								<form method="post" action="{% url 'process_input' %}" id="inputForm">
+									<div class="fields">
+										<div class="field">
+											{% csrf_token %}
+            								{{ form.text_input }}
+										</div>
+									</div>
+								</form>
+								<!-- Table Container -->
+								<div class="table-container">
+									<table id="resultTable">
+										<thead>
+											<tr>
+												<th>Classement</th>
+												<th>Nom de l'article</th>
+												<th>Prix (en dollars)</th>
+												<th>Note moyenne vendeur</th>
+												<th>% retours positifs</th>
+												<th>Nombre articles vendus</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% if output %}
+												{% for row in output %}
+													<tr>
+														<td>{{ row.index }}</td>
+														<td>{{ row.title }}</td>
+														<td>{{ row.price_dollars }}</td>
+														<td>{{ row.rating_avg }}</td>
+														<td>{{ row.positive_feedback_percentage }}</td>
+														<td>{{ row.nb_items_sold }}</td>
+													</tr>
+												{% endfor %}
+											{% endif %}
+										</tbody>
+									</table>
+								</div>
+							</section>
+						</div>
+					</section>
+
+				<!-- Three -->
+					<section id="three" class="wrapper style1 fade-up">
+						<div class="inner">
+							<h2>Contact</h2>
+							<p>Si vous souhaitez me contacter, vous pouvez trouver mes réseaux ci-dessous.</p>
+							<section>
+								<ul class="contact">
+									<li>
+										<h3>E-mail</h3>
+										<a id="copyEmail">nicolas.perez@etu.univ-lyon1.fr</a>
+									</li>
+									<li>
+										<h3>Téléphone</h3>
+										<a id="copyPhoneNumber">0781281235</a>
+									</li>
+									<li>
+										<h3>Réseaux sociaux</h3>
+										<ul class="icons">
+											<li><a href="https://github.com/nicolasprz" target="_blank" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+											<li><a href="https://www.linkedin.com/in/nicolas-perez-342853252/" target="_blank" class="icon brands fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+										</ul>
+									</li>
+								</ul>
+							</section>
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Footer -->
+			<footer id="footer" class="wrapper style1-alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="{% static 'js/jquery.min.js' %}"></script>
+			<script src="{% static 'js/jquery.scrollex.min.js' %}"></script>
+			<script src="{% static 'js/jquery.scrolly.min.js' %}"></script>
+			<script src="{% static 'js/browser.min.js' %}"></script>
+			<script src="{% static 'js/breakpoints.min.js' %}"></script>
+			<script src="{% static 'js/util.js' %}"></script>
+			<script src="{% static 'js/main.js' %}"></script>
+
+	</body>
+	<script>
+		// To submit the form by pressing enter
+		document.querySelector('textarea').addEventListener('keydown', function(event) {
+			if (event.key === 'Enter' && !event.shiftKey) {
+				event.preventDefault();
+				document.querySelector('form').submit();
+			}
+		});
+		
+
+		// To copy contact information to clipboard
+		function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            textarea.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+
+        document.getElementById('copyEmail').addEventListener('click', function() {
+            const email = this.innerText;
+            copyToClipboard(email);
+            alert('Email copied to clipboard: ' + email);
+        });
+
+        document.getElementById('copyPhoneNumber').addEventListener('click', function() {
+            const phoneNumber = this.innerText;
+            copyToClipboard(phoneNumber);
+            alert('Phone number copied to clipboard: ' + phoneNumber);
+        });
+
+		// To keep scroll Y value when reloading the page
+		document.addEventListener("DOMContentLoaded", function(event) { 
+            var scrollpos = localStorage.getItem('scrollpos');
+            if (scrollpos) window.scrollTo(0, scrollpos);
+        });
+
+        window.onbeforeunload = function(e) {
+            localStorage.setItem('scrollpos', window.scrollY);
+        };
+	</script>
+</html>
