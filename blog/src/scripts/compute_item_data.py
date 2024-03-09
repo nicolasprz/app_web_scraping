@@ -14,6 +14,7 @@ def sort_scraped_df(df: pd.DataFrame) -> pd.DataFrame:
     return df.sort_values(by=SORTING_ORDER, ascending=(False, False, False, True), ignore_index=True)
 
 
+<<<<<<< HEAD
 def main(scraped_data: pd.DataFrame) -> pd.DataFrame:
     """Processes scraped data from eBay and returns a copy of it after processing."""
     return sort_scraped_df(df=scraped_data)
@@ -21,3 +22,25 @@ def main(scraped_data: pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == "__main__":
     main(scraped_data=pd.read_csv("blog/output/scraped_data.pkl", delimiter=';'))
+=======
+def remove_items_not_full_input(df: pd.DataFrame, user_input: str) -> pd.DataFrame:
+    """
+    Removes items that do not have the full user input in their title
+    :param df: DataFrame to filter
+    :param user_input: given user input fetched from website form
+    :return: filtered DataFrame
+    """
+    return df.loc[df.title.str.contains(user_input, case=False)].reset_index(drop=True)
+
+
+def main(scraped_data: pd.DataFrame, user_input: str) -> pd.DataFrame:
+    """
+    Processes scraped data from eBay and returns a copy of it after processing.
+    :param scraped_data: data that was scraped on eBay website
+    :param user_input: input of user on web scraping website
+    :return: sorted DataFrame to display on website
+    """
+    resulting_df = sort_scraped_df(scraped_data)
+    resulting_df = remove_items_not_full_input(resulting_df, user_input)
+    return resulting_df
+>>>>>>> 526fd0000bba8aec058463e411130ee8afad621d

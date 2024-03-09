@@ -40,12 +40,22 @@ def url_to_soup_object(url: str,
     response = requests.get(url)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
+<<<<<<< HEAD
         if soup.title is not None:
             print(f"Title of page: {soup.title.text.strip(' | eBay')}")
         if out_path is not None:
             soup_object_to_txt_file(soup, out_path)
         return soup
     raise ValueError(f"Couldn't connect to eBay: {response.status_code}\n{response.text}")
+=======
+        print(f"Title of page: {soup.title.text.strip(' | eBay')}")
+        if out_path is not None:
+            soup_object_to_txt_file(soup, out_path)
+        return soup
+    else:
+        raise ValueError(f"Couldn't connect to eBay: {response.status_code}\n"
+                         f"{response.text}")
+>>>>>>> 526fd0000bba8aec058463e411130ee8afad621d
 
 
 def get_complete_url(base_url: str, user_input: str) -> str:
@@ -59,6 +69,7 @@ def get_complete_url(base_url: str, user_input: str) -> str:
     return f"{base_url}{user_input.replace(' ', '+')}&_sacat=0"
 
 
+<<<<<<< HEAD
 def get_price(tag: Tag) -> float:
     """
     From element tag, gets the price of sold object.
@@ -68,6 +79,16 @@ def get_price(tag: Tag) -> float:
     list_price = tag.find('span', class_='s-item__price').text.split()
     # Only keeps last (highest) price if it is an interval, else just keeps the only price available
     return float(list_price[-1].replace(',', '.').replace('$', ''))
+=======
+def get_price(tag: Tag) -> float | list[float]:
+    """
+    From element tag, gets the price of sold object.
+    :param tag: Tag object where price is found
+    :return: price as float or list of floats
+    """
+    list_price = tag.find('span', class_='s-item__price').text.split()
+    return float(list_price[-1].replace(',', '').replace('$', ''))
+>>>>>>> 526fd0000bba8aec058463e411130ee8afad621d
 
 
 def get_seller_info(soup: BeautifulSoup) -> tuple[float | None, float | None]:
