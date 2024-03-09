@@ -44,6 +44,9 @@ def url_to_soup_object(url: str,
         if out_path is not None:
             soup_object_to_txt_file(soup, out_path)
         return soup
+    else:
+        raise ValueError(f"Couldn't connect to eBay: {response.status_code}\n"
+                         f"{response.text}")
 
 
 def get_complete_url(base_url: str, user_input: str) -> str:
