@@ -40,13 +40,12 @@ def url_to_soup_object(url: str,
     response = requests.get(url)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
-        print(f"Title of page: {soup.title.text.strip(' | eBay')}")
+        if soup.title is not None:
+            print(f"Title of page: {soup.title.text.strip(' | eBay')}")
         if out_path is not None:
             soup_object_to_txt_file(soup, out_path)
         return soup
-    else:
-        raise ValueError(f"Couldn't connect to eBay: {response.status_code}\n"
-                         f"{response.text}")
+    raise ValueError(f"Couldn't connect to eBay: {response.status_code}\n{response.text}")
 
 
 def get_complete_url(base_url: str, user_input: str) -> str:
@@ -60,18 +59,15 @@ def get_complete_url(base_url: str, user_input: str) -> str:
     return f"{base_url}{user_input.replace(' ', '+')}&_sacat=0"
 
 
-def get_price(tag: Tag) -> float | list[float]:
+def get_price(tag: Tag) -> float:
     """
     From element tag, gets the price of sold object.
     :param tag: Tag object where price is found
-    :return: price as float or list of floats
+    :return: price as float
     """
     list_price = tag.find('span', class_='s-item__price').text.split()
-    if len(list_price) > 2:
-        return [float(element.replace(',', '.').replace('$', ''))
-                for element in list_price
-                if re.search(r'\d', element)]  # Checks if contains a number
-    return float(list_price[0].replace(',', '.').replace('$', ''))
+    # Only keeps last (highest) price if it is an interval, else just keeps the only price available
+    return float(list_price[-1].replace(',', '.').replace('$', ''))
 
 
 def get_seller_info(soup: BeautifulSoup) -> tuple[float | None, float | None]:
@@ -190,7 +186,7 @@ def main(user_input: str) -> pd.DataFrame:
     url = get_complete_url(BASE_URL, user_input)
     soup = url_to_soup_object(url, f"{OUTPUT_DIR}html.txt")
     data = scrape_pages(soup)
-    data.to_csv(f"{OUTPUT_DIR}scraped_data.csv", index=False, sep=';')
+    data.to_pickle(f"{OUTPUT_DIR}scraped_data.pkl")
     return data
 
 

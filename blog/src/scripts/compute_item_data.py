@@ -18,3 +18,6 @@ def main(scraped_data: pd.DataFrame) -> pd.DataFrame:
     """Processes scraped data from eBay and returns a copy of it after processing."""
     return sort_scraped_df(df=scraped_data)
 
+
+if __name__ == "__main__":
+    main(scraped_data=pd.read_csv("blog/output/scraped_data.pkl", delimiter=';'))
