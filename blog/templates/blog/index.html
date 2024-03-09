@@ -65,9 +65,9 @@
 								<div class="inner">
 									<h2>But du projet</h2>
 									<p>Ce site est le résultat d'un projet en rapport
-										avec le scraping de pages web. Plus précisément, à l'aide d'une recherche rentrée par l'utilisateur,
-										vous obtiendrez un classement des produit les plus intéressants à acheter (en fonction notamment des 
-										informations sur le vendeur, les retours des utilisateurs de eBay, etc.).</p>
+										avec le scraping de pages web. Plus précisément, grâce à votre recherche rentrée dans le formulaire ci-dessous,
+										vous obtiendrez un classement des produits les plus intéressants à acheter (en fonction notamment des
+										informations sur le vendeur, les retours des utilisateurs d'eBay, etc.).</p>
 									<ul class="actions">
 										<li><a href="#two" class="button scrolly">Scraping</a></li>
 									</ul>
@@ -93,30 +93,30 @@
 								<!-- Table Container -->
 								<div class="table-container">
 									<table id="resultTable">
-										<thead>
-											<tr>
-												<th>Classement</th>
-												<th>Nom de l'article</th>
-												<th>Prix (en dollars)</th>
-												<th>Note moyenne vendeur</th>
-												<th>% retours positifs</th>
-												<th>Nombre articles vendus</th>
-											</tr>
-										</thead>
-										<tbody>
-											{% if output %}
+										{% if output %}
+											<thead>
+												<tr>
+													<th>Classement</th>
+													<th>Nom de l'article</th>
+													<th>Prix (en dollars)</th>
+													<th>Note moyenne vendeur</th>
+													<th>% retours positifs</th>
+													<th>Nombre articles vendus</th>
+												</tr>
+											</thead>
+											<tbody>
 												{% for row in output %}
 													<tr>
 														<td>{{ row.index }}</td>
-														<td>{{ row.title }}</td>
+														<td><a href="{{ row.item_url }}" target="_blank">{{ row.title }}</a></td>
 														<td>{{ row.price_dollars }}</td>
 														<td>{{ row.rating_avg }}</td>
 														<td>{{ row.positive_feedback_percentage }}</td>
 														<td>{{ row.nb_items_sold }}</td>
 													</tr>
 												{% endfor %}
-											{% endif %}
-										</tbody>
+											</tbody>
+										{% endif %}
 									</table>
 								</div>
 							</section>
