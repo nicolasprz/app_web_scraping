@@ -5,7 +5,7 @@ class NoResizeTextarea(forms.Textarea):
     def __init__(self, attrs=None):
         if attrs is None:
             attrs = {}
-        attrs.update({'style': 'resize:none;'})
+        attrs.update({'style': 'resize:none; overflow-y:hidden; width 100%; height: 80px;'})
         super().__init__(attrs=attrs)
 
 
