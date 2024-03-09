@@ -9,20 +9,12 @@ def sort_scraped_df(df: pd.DataFrame) -> pd.DataFrame:
     :param df: DataFrame with scraped data
     :return: sorted DataFrame
     """
+    df = df.dropna()
     df['nb_items_int'] = df['nb_items_sold'].map(lambda nb: nb.as_int)
     assert all(col in df.columns for col in SORTING_ORDER)
     return df.sort_values(by=SORTING_ORDER, ascending=(False, False, False, True), ignore_index=True)
 
 
-<<<<<<< HEAD
-def main(scraped_data: pd.DataFrame) -> pd.DataFrame:
-    """Processes scraped data from eBay and returns a copy of it after processing."""
-    return sort_scraped_df(df=scraped_data)
-
-
-if __name__ == "__main__":
-    main(scraped_data=pd.read_csv("blog/output/scraped_data.pkl", delimiter=';'))
-=======
 def remove_items_not_full_input(df: pd.DataFrame, user_input: str) -> pd.DataFrame:
     """
     Removes items that do not have the full user input in their title
@@ -43,4 +35,3 @@ def main(scraped_data: pd.DataFrame, user_input: str) -> pd.DataFrame:
     resulting_df = sort_scraped_df(scraped_data)
     resulting_df = remove_items_not_full_input(resulting_df, user_input)
     return resulting_df
->>>>>>> 526fd0000bba8aec058463e411130ee8afad621d
