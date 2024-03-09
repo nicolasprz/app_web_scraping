@@ -67,11 +67,7 @@ def get_price(tag: Tag) -> float | list[float]:
     :return: price as float or list of floats
     """
     list_price = tag.find('span', class_='s-item__price').text.split()
-    if len(list_price) > 2:
-        return [float(element.replace(',', '.').replace('$', ''))
-                for element in list_price
-                if re.search(r'\d', element)]  # Checks if contains a number
-    return float(list_price[0].replace(',', '.').replace('$', ''))
+    return float(list_price[-1].replace(',', '').replace('$', ''))
 
 
 def get_seller_info(soup: BeautifulSoup) -> tuple[float | None, float | None]:
@@ -190,7 +186,7 @@ def main(user_input: str) -> pd.DataFrame:
     url = get_complete_url(BASE_URL, user_input)
     soup = url_to_soup_object(url, f"{OUTPUT_DIR}html.txt")
     data = scrape_pages(soup)
-    data.to_csv(f"{OUTPUT_DIR}scraped_data.csv", index=False, sep=';')
+    data.to_pickle(f"{OUTPUT_DIR}scraped_data.pkl")
     return data
 
 
