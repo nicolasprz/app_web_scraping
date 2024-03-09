@@ -11,7 +11,7 @@ def sort_scraped_df(df: pd.DataFrame) -> pd.DataFrame:
     """
     df['nb_items_int'] = df['nb_items_sold'].map(lambda nb: nb.as_int)
     assert all(col in df.columns for col in SORTING_ORDER)
-    return df.sort_values(by=SORTING_ORDER, ascending=(False, False, False, True))
+    return df.sort_values(by=SORTING_ORDER, ascending=(False, False, False, True), ignore_index=True)
 
 
 def main(scraped_data: pd.DataFrame) -> pd.DataFrame:
