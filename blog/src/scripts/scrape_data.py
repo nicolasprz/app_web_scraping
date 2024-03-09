@@ -3,13 +3,12 @@ Given the page associated to user input, scrapes data on main page.
 """
 import os
 import re
-from typing import Optional
+from typing import Optional, Any
 
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup, Tag
-
-# Test
+from .items_classes import NbItems
 
 BASE_URL: str = ('https://www.ebay.com/sch/i.html?_from='
                  'R40&_trksid=p4432023.m570.l1313&_nkw=')
@@ -72,7 +71,7 @@ def get_price(tag: Tag) -> float | list[float]:
     return float(list_price[0].replace(',', '.').replace('$', ''))
 
 
-def get_seller_info(soup: BeautifulSoup) -> tuple[float, float]:
+def get_seller_info(soup: BeautifulSoup) -> tuple[float | None, float | None]:
     """
     Given soup object of a certain item from eBay, gets the seller info,
     i.e. its positive feedback percentage and its number of items sold.
@@ -100,21 +99,18 @@ def get_percentage_as_float(value: str) -> float:
     """
     Given a percentage value as a string, returns it as a float.
     :param value: percentage value, as a string
-    :return: floating repr of percentage value, striped of non digit characters
+    :return: floating repr of percentage value, stripped of non digit characters
     """
     return float(value.strip('%'))
 
 
-def get_nb_items_sold(value: str) -> int:
+def get_nb_items_sold(value: str) -> NbItems:
     """
-    # TODO: Add a script to handle millions (maybe an Enum ?).
-    Given a number of format '[0-9]K?', returns its value as a integer.
+    Given a number of format '[0-9][K|M]?', returns its value as a integer.
     :param value: value as a string
-    :return: same value converted to an integer
+    :return: same value converted to a NbItems object
     """
-    if 'K' in value:
-        value = float(value.strip('K')) * 1000
-    return int(value)
+    return NbItems.from_str(value)
 
 
 def get_rating_average(soup: BeautifulSoup) -> float:
@@ -136,7 +132,7 @@ def get_rating_average(soup: BeautifulSoup) -> float:
         if re.match(floating_pattern, rate_str):
             ratings.append(float(rate_str))
     if ratings:
-        return sum(ratings) / len(ratings)
+        return round(sum(ratings) / len(ratings), 3)
 
 
 def scrape_item_data(soup: BeautifulSoup) -> tuple[float | int, ...]:
@@ -146,47 +142,40 @@ def scrape_item_data(soup: BeautifulSoup) -> tuple[float | int, ...]:
     """
     rating_avg = get_rating_average(soup)
     positive_feedback_percentage, nb_items_sold = get_seller_info(soup)
-    print(f"{rating_avg=}")
-    print(f"{positive_feedback_percentage=}")
-    print(f"{nb_items_sold=}\n")
     return rating_avg, positive_feedback_percentage, nb_items_sold
 
 
-def scrape_pages(soup: BeautifulSoup, tags_out_path: str) -> pd.DataFrame:
+def extract_item_data(li_tag: Tag) -> dict[str, Any]:
+    """
+    Fora given li tag, scrapes its data (i.e. scrapes a single item data).
+    :param li_tag: li tag of given article on eBay
+    :return: dictionary with a key value pair for each scraped chunk of data
+    """
+    title = li_tag.find('span', role='heading').text
+    price = get_price(li_tag)
+    item_link = li_tag.find('a', class_='s-item__link').get('href')
+    item_soup = url_to_soup_object(url=item_link)
+    rating_avg, positive_feedback_percentage, nb_items_sold = scrape_item_data(item_soup)
+    return {
+        'title': title,
+        'price_dollars': price,
+        'rating_avg': rating_avg,
+        'positive_feedback_percentage': positive_feedback_percentage,
+        'nb_items_sold': nb_items_sold,
+        'item_url': item_link
+    }
+
+
+def scrape_pages(soup: BeautifulSoup) -> pd.DataFrame:
     """
     Scrape data given tags object.
     :param soup: BeautifulSoup object to scrape
-    :param tags_out_path: path of output text code
+    :return: DataFrame with all scraped data
     """
     # Get all items from search
-    target_li_tags = soup.find_all(
-        'li', class_='s-item s-item__pl-on-bottom')[1:]
-    with open(tags_out_path, 'w'):
-        pass
-    titles = []
-    prices = []
-    ratings = []
-    percentages = []
-    nb_items = []
-    for li_tag in target_li_tags:
-        soup_object_to_txt_file(li_tag, tags_out_path, write_type='a')
-        titles.append(li_tag.find('span', role='heading').text)
-        price = get_price(li_tag)
-        prices.append(price)
-        single_item = li_tag.find('a', class_='s-item__link')
-        single_item_link = single_item.get('href')
-        item_soup = url_to_soup_object(url=single_item_link)
-        (
-            rating_avg, positive_feedback_percentage, nb_items_sold
-        ) = scrape_item_data(item_soup)
-        ratings.append(rating_avg)
-        percentages.append(positive_feedback_percentage)
-        nb_items.append(nb_items_sold)
-    return pd.DataFrame(dict(
-        title=titles, price_dollars=prices, rating_avg=ratings,
-        positive_feedback_percentage=percentages,
-        nb_items_sold=nb_items
-    ))
+    target_li_tags = soup.find_all('li', class_='s-item s-item__pl-on-bottom')[1:]
+    data = [extract_item_data(li_tag) for li_tag in target_li_tags]
+    return pd.DataFrame(data)
 
 
 def main(user_input: str) -> pd.DataFrame:
@@ -195,9 +184,9 @@ def main(user_input: str) -> pd.DataFrame:
     to a csv file.
     """
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    URL = get_complete_url(BASE_URL, user_input)
-    soup = url_to_soup_object(URL, f"{OUTPUT_DIR}html.txt")
-    data = scrape_pages(soup, f"{OUTPUT_DIR}li_tags.txt")
+    url = get_complete_url(BASE_URL, user_input)
+    soup = url_to_soup_object(url, f"{OUTPUT_DIR}html.txt")
+    data = scrape_pages(soup)
     data.to_csv(f"{OUTPUT_DIR}scraped_data.csv", index=False, sep=';')
     return data
 
