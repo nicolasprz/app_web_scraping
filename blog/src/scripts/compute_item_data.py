@@ -9,7 +9,7 @@ def sort_scraped_df(df: pd.DataFrame) -> pd.DataFrame:
     :param df: DataFrame with scraped data
     :return: sorted DataFrame
     """
-    df = df.dropna()
+    df = df.dropna().copy()
     df['nb_items_int'] = df['nb_items_sold'].map(lambda nb: nb.as_int)
     assert all(col in df.columns for col in SORTING_ORDER)
     return df.sort_values(by=SORTING_ORDER, ascending=(False, False, False, True), ignore_index=True)
@@ -22,7 +22,10 @@ def remove_items_not_full_input(df: pd.DataFrame, user_input: str) -> pd.DataFra
     :param user_input: given user input fetched from website form
     :return: filtered DataFrame
     """
-    return df.loc[df.title.str.contains(user_input, case=False)].reset_index(drop=True)
+    resulting_df = df.loc[df.title.str.contains(user_input, case=False)].reset_index(drop=True)
+    if resulting_df.shape[0] > 10:
+        return resulting_df
+    return df
 
 
 def main(scraped_data: pd.DataFrame, user_input: str) -> pd.DataFrame:
