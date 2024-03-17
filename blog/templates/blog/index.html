@@ -7,7 +7,7 @@
 -->
 <html>
 	<head>
-		<title>eBay Scraping</title>
+		<title>Web Scraping</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="{% static 'css/main.css' %}" />
@@ -36,7 +36,7 @@
 					<section id="intro" class="wrapper style1 fullscreen fade-up">
 						<div class="inner">
 							<h1>Web Scraping</h1>
-							<p>Bienvenue sur ce site de web scraping ! Gagnez du temps lors de vos recherches sur eBay. <br />
+							<p>Bienvenue sur ce site de web scraping ! Gagnez du temps lors de vos recherches sur votre site de e-commerce préféré. <br />
 							Pour cela rendez-vous dans la partie "scraping" ci-dessous.</p>
 							<ul class="actions">
 								<li><a href="#one" class="button scrolly">Plus d'informations</a></li>
@@ -67,7 +67,7 @@
 									<p>Ce site est le résultat d'un projet en rapport
 										avec le scraping de pages web. Plus précisément, grâce à votre recherche rentrée dans le formulaire ci-dessous,
 										vous obtiendrez un classement des produits les plus intéressants à acheter (en fonction notamment des
-										informations sur le vendeur, les retours des utilisateurs d'eBay, etc.).</p>
+										informations sur le vendeur, les retours des utilisateurs, etc.).</p>
 									<ul class="actions">
 										<li><a href="#two" class="button scrolly">Scraping</a></li>
 									</ul>
@@ -80,13 +80,18 @@
 					<section id="two" class="wrapper style3 fade-up">
 						<div class="inner">
 							<h2>Web Scraping</h2>
-							<p>Entrez votre recherche dans le formulaire ci-dessous, puis appuyez sur entrée.</p>
+							<p>Sélectionnez le site à scraper, entrez votre recherche dans le formulaire ci-dessous, puis appuyez sur entrée.</p>
 							<section>
 								<form method="post" action="{% url 'process_input' %}" id="inputForm">
+									{% csrf_token %}
 									<div class="fields">
 										<div class="field">
-											{% csrf_token %}
-            								{{ form.text_input }}
+											<label for="id_option">Choix du site:</label>
+											{{ form.option }}
+										</div>
+										<div class="field">
+											<label for="id_text_input">Recherche:</label>
+											{{ form.text_input }}
 										</div>
 									</div>
 								</form>

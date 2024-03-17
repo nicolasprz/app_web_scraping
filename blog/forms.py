@@ -10,10 +10,14 @@ class NoResizeTextarea(forms.Textarea):
 
 
 class UserInputForm(forms.Form):
+    option = forms.ChoiceField(choices=(
+        ('ebay', 'eBay'),
+        ('amazon', 'Amazon'),
+    ))
     text_input = forms.CharField(
         widget=NoResizeTextarea(attrs={
             'rows': 2, 'cols': 30,
-            'placeholder': 'Entrez votre recherche eBay ici...',
+            'placeholder': 'Entrez votre recherche ici...',
         }),
         required=False,
     )

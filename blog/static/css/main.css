@@ -2305,6 +2305,10 @@ input, select, textarea {
 
 		}
 
+	#id_option {
+        width: 200px;
+    }
+
 	label {
 		color: #ffffff;
 		font-weight: bold;

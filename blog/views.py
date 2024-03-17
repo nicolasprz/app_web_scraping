@@ -9,8 +9,9 @@ def process_input(request):
     if request.method == 'POST':
         form = UserInputForm(request.POST)
         if form.is_valid():
+            website_name = form.cleaned_data['option']
             user_input = form.cleaned_data['text_input']
-            output = main.main(user_input)
+            output = main.main(user_input, website_name)
             context = {'form': UserInputForm(),
                        'output': output.to_dict(orient='records'),
                        'scroll_position': scroll_position}
