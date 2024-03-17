@@ -28,10 +28,7 @@ class EBayScraper(Scraper):
     """Class containing scraping methods for BeautifulSoup."""
 
     def __init__(self, url: str, user_input: str) -> None:
-        """
-        Constructor of Scraper class.
-        :param url: url of website to scrape
-        """
+        """Constructor of Scraper class."""
         complete_url = get_complete_url(base_url=url, user_input=user_input)
         self.base_soup: BeautifulSoup = self.get_html_soup(complete_url)
 
@@ -165,8 +162,7 @@ class EBayScraper(Scraper):
 
     def scrape(self, user_input: str) -> pd.DataFrame:
         """
-        Main function. This function is run by this script. Saves scraped data
-        to a csv file.
+        Main function. This function is run by this script. Saves scraped data to a pickle file.
         """
         data = self.scrape_pages()
         data.to_pickle(f"{OUTPUT_DIR}scraped_data.pkl")
