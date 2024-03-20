@@ -23,7 +23,8 @@ def scrape_ebay(user_input: str) -> pd.DataFrame:
 def scrape_amazon(user_input: str) -> pd.DataFrame:
     """Runs scraping scripts for Amazon scraping."""
     scraper = amazon_scraping.AmazonScraper(url=AMAZON_BASE_URL, user_input=user_input)
-    return scraper.scrape(user_input)
+    scraped_data = scraper.scrape(user_input)
+    return scraped_data.head(10)
 
 
 def main(user_input: str, website: str) -> pd.DataFrame | None:

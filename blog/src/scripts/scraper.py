@@ -1,5 +1,5 @@
 """
-Script defining classes and Protocol needed to scrape a website with BeautifulSoup
+Script defining classes and Protocol needed to scrape a website with BeautifulSoup.
 """
 from typing import Protocol
 from bs4 import BeautifulSoup
@@ -17,6 +17,13 @@ class RequestsConnectionError(Exception):
 
 class Scraper(Protocol):
     """Protocol class for Scraper classes."""
+
+    @staticmethod
+    def get_complete_url(base_url: str, user_input: str) -> str:
+        """
+        Given url to website and user input, concatenates them accordingly to get the link containing
+        results of user's research.
+        """
 
     @staticmethod
     def get_html_soup(url: str) -> BeautifulSoup:

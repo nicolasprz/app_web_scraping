@@ -14,22 +14,12 @@ from .scraper import RequestsConnectionError, Scraper
 OUTPUT_DIR: str = f"{os.path.dirname(__file__)}/../../output/"
 
 
-def get_complete_url(base_url: str, user_input: str) -> str:
-    """
-    Given the base URL of the website, returns the complete url with user input.
-    :param base_url: base url of eBay website for user research
-    :param user_input: user input given from website's form.
-    :return: complete url
-    """
-    return f"{base_url}{user_input.replace(' ', '+')}&_sacat=0"
-
-
 class EBayScraper(Scraper):
     """Class containing scraping methods for BeautifulSoup."""
 
     def __init__(self, url: str, user_input: str) -> None:
         """Constructor of Scraper class."""
-        complete_url = get_complete_url(base_url=url, user_input=user_input)
+        complete_url = self.get_complete_url(base_url=url, user_input=user_input)
         self.base_soup: BeautifulSoup = self.get_html_soup(complete_url)
 
     @staticmethod
@@ -48,6 +38,16 @@ class EBayScraper(Scraper):
         raise RequestsConnectionError(website_name="eBay",
                                       status_code=response.status_code,
                                       error_message=response.text)
+
+    @staticmethod
+    def get_complete_url(base_url: str, user_input: str) -> str:
+        """
+        Given the base URL of the website, returns the complete url with user input.
+        :param base_url: base url of eBay website for user research
+        :param user_input: user input given from website's form.
+        :return: complete url
+        """
+        return f"{base_url}{user_input.replace(' ', '+')}&_sacat=0"
 
     @staticmethod
     def get_price(tag: Tag) -> float | list[float]:
@@ -121,7 +121,7 @@ class EBayScraper(Scraper):
         if ratings:
             return round(sum(ratings) / len(ratings), 3)
 
-    def scrape_item_data(self, soup: BeautifulSoup) -> tuple[float | int, ...]:
+    def scrape_item_data(self, soup: BeautifulSoup) -> tuple[float | int | None, ...]:
         """
         Scrapes single item ratings data (from other users of eBay).
         :param soup: soup object containing a single item data
